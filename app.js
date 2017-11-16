@@ -97,9 +97,9 @@ server.get('/', function (req, res){
 
     var logEntry = parseQueryToLogEntry(req.query);
     logResponse (logEntry);
-    statusUpdateResponse = "Entry Logged";
-    console.log('Outbound Response:', "Race " + req.query.raceCodex + ":" + statusUpdateResponse);
-    res.send(req.query.status + ":" + statusUpdateResponse);
+    statusUpdateResponse = "Outbound Response: Race " + req.query.raceCodex + ": Entry Logged";
+    console.log( statusUpdateResponse);
+    res.send(statusUpdateResponse);
     // res.send(session.userData);
 
 });
