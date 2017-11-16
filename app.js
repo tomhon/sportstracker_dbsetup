@@ -94,11 +94,11 @@ function parseQueryToLogEntry(query) {
 server.get('/', function (req, res){
     console.log("Inbound Request:" , req.query);
     res.header('Access-Control-Allow-Origin', "*");
-    
+
     var logEntry = parseQueryToLogEntry(req.query);
     logResponse (logEntry);
     statusUpdateResponse = "Entry Logged";
-    console.log('Outbound Response:', req.query + ":" + statusUpdateResponse);
+    console.log('Outbound Response:', "Race " + req.query.raceCodex + ":" + statusUpdateResponse);
     res.send(req.query.status + ":" + statusUpdateResponse);
     // res.send(session.userData);
 
