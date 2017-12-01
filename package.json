@@ -19,6 +19,7 @@
   "dependencies": {
     "documentdb": "^1.14.1",
     "restify": "^6.3.2",
+    "tedious": "^2.1.5",
     "url": "^0.11.0"
   }
 }

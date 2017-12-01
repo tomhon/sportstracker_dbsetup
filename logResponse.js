@@ -1,11 +1,7 @@
-var documentClient = require("documentdb").DocumentClient;
-var config = require("./config");
-var url = require('url');
-var client = new documentClient(config.endpoint, { "masterKey": config.primaryKey });
 
-var HttpStatusCodes = { NOTFOUND: 404 };
-var databaseUrl = `dbs/${config.database.id}`;
-var collectionUrl = `${databaseUrl}/colls/${config.collection.id}`;
+
+
+
 
 module.exports = function logResponse (eventUpdate) {
     var date = new Date();
@@ -18,101 +14,82 @@ module.exports = function logResponse (eventUpdate) {
 
 }
 
+var Connection = require('tedious').Connection;  
+var config = require('./configsql');
+var connection = new Connection(config);  
+connection.on('connect', function(err) {  
+// If no error, then good to proceed.  
+    console.log("Connected");  
+});  
 
-/**
- * Get the database by ID, or create if it doesn't exist.
- * @param {string} database - The database to get or create
- */
-function getDatabase() {
-    console.log ('CosmosDB Endpoint:' + config.endpoint);
-    console.log ('CosmosDB Password:' + config.primaryKey);
-    console.log(`Getting database:\n${config.database.id}\n`);
+//open connection
 
-    return new Promise((resolve, reject) => {
-        client.readDatabase(databaseUrl, (err, result) => {
-            if (err) {
-                if (err.code == HttpStatusCodes.NOTFOUND) {
-                    client.createDatabase(config.database, (err, created) => {
-                        if (err) reject(err)
-                        else resolve(created);
-                    });
-                } else {
-                    reject(err);
-                }
-            } else {
-                resolve(result);
-            }
-        });
-    });
-}
+var Connection = require('tedious').Connection;  
+var config = require('./configsql'); 
+var connection = new Connection(config);  
+connection.on('connect', function(err) {  
+    // If no error, then good to proceed.  
+    console.log("Connected");  
+    executeStatement();  
+});  
 
-/**
- * Get the collection by ID, or create if it doesn't exist.
- */
-function getCollection() {
-    console.log(`Getting collection:\n${config.collection.id}\n`);
+//query a row
 
-    return new Promise((resolve, reject) => {
-        client.readCollection(collectionUrl, (err, result) => {
-            if (err) {
-                if (err.code == HttpStatusCodes.NOTFOUND) {
-                    client.createCollection(databaseUrl, config.collection, { offerThroughput: 400 }, (err, created) => {
-                        if (err) reject(err)
-                        else resolve(created);
-                    });
-                } else {
-                    reject(err);
-                }
-            } else {
-                resolve(result);
-            }
-        });
-    });
-}
+var Request = require('tedious').Request;  
+var TYPES = require('tedious').TYPES;  
 
-/**
- * Get the document by ID, or create if it doesn't exist.
- * @param {function} callback - The callback function on completion
- */
-function getDBDocument(document) {
-    let documentUrl = `${collectionUrl}/docs/${document.id}`;
-    console.log(`Getting document:\n${document.id}\n`);
+function executeStatement() {  
+    request = new Request("SELECT c.CustomerID, c.CompanyName,COUNT(soh.SalesOrderID) AS OrderCount FROM SalesLT.Customer AS c LEFT OUTER JOIN SalesLT.SalesOrderHeader AS soh ON c.CustomerID = soh.CustomerID GROUP BY c.CustomerID, c.CompanyName ORDER BY OrderCount DESC;", function(err) {  
+    if (err) {  
+        console.log(err);}  
+    });  
+    var result = "";  
+    request.on('row', function(columns) {  
+        columns.forEach(function(column) {  
+          if (column.value === null) {  
+            console.log('NULL');  
+          } else {  
+            result+= column.value + " ";  
+          }  
+        });  
+        console.log(result);  
+        result ="";  
+    });  
 
-    return new Promise((resolve, reject) => {
-        client.readDocument(documentUrl, (err, result) => {
-            if (err) {
-                if (err.code == HttpStatusCodes.NOTFOUND) {
-                    client.createDocument(collectionUrl, document, (err, created) => {
-                        if (err) reject(err)
-                        else resolve(created);
-                    });
-                } else {
-                    reject(err);
-                }
-            } else {
-                resolve(result);
-            }
-        });
-    });
-};
+    request.on('done', function(rowCount, more) {  
+    console.log(rowCount + ' rows returned');  
+    });  
+    connection.execSql(request);  
+} 
 
 
-//initialize database
+//Insert a Row
 
-var initialLogEntry =
+var Request = require('tedious').Request  
+var TYPES = require('tedious').TYPES;  
 
-{
-    raceCodex: 'N9999',
-    heatID: '1',
-    sport: 'appInitialized',
-    event: 'appInitialized',
-    indexed: 'Yes', 
-    temp: '0', 
-    precip: 'None', 
-    gender: 'Men',
+function executeStatement1() {  
+    request = new Request("INSERT SalesLT.Product (Name, ProductNumber, StandardCost, ListPrice, SellStartDate) OUTPUT INSERTED.ProductID VALUES (@Name, @Number, @Cost, @Price, CURRENT_TIMESTAMP);", function(err) {  
+     if (err) {  
+        console.log(err);}  
+    });  
+    request.addParameter('Name', TYPES.NVarChar,'SQL Server Express 2014');  
+    request.addParameter('Number', TYPES.NVarChar , 'SQLEXPRESS2014');  
+    request.addParameter('Cost', TYPES.Int, 11);  
+    request.addParameter('Price', TYPES.Int,11);  
+    request.on('row', function(columns) {  
+        columns.forEach(function(column) {  
+          if (column.value === null) {  
+            console.log('NULL');  
+          } else {  
+            console.log("Product id of inserted item is " + column.value);  
+          }  
+        });  
+    });       
+    connection.execSql(request);  
+} 
 
-}
-getDatabase()
-.then(() => getCollection())
-.then(() => {getDBDocument(initialLogEntry)})
-.catch((error) => { console.log(`Completed with error ${JSON.stringify(error)}`) });
+
+
+
+
