@@ -1,127 +1,105 @@
+
+
+
+
+function findEmptySlot () {
+    var insertPoint = Math.floor((Math.random() * 6) + 1);
+    if (randomNumberArray[insertPoint] != undefined) {
+       insertPoint = findEmptySlot();
+    }
+    return insertPoint;
+}
+
+
+
+function checkArray(testArray) {
+    var sumTotal = 0;
+    var productTotal = 1;
+    testArray.forEach(function(item){
+        sumTotal += item;
+        productTotal *= item;
+    })
+    return (sumTotal===21 && productTotal===720);
+}
+
+
+
+
 var config = require("./config");
 
 //stub this in when online
 var logResponse = require("./logResponse");
 
-// function bibData(color) {
-//     this.bibColor = color,
-//     this.startLane = null,
-//     this.splitPosition = null,
-//     this.finishPostion = null
-// }
 
 
 
-// var logEntry =
 
-// {
-//     raceCodex: 'N9999',
-//     heatID: '1',
-//     sport: 'snowboarding',
-//     event: 'snowboardCross',
-//     indexed: 'Yes', 
-//     temp: '0', 
-//     precip: 'None', 
-//     gender: 'Men',
-//     bibRedStartLane: null,
-//     bibRedSplitPosition: null,
-//     bibRedFinishPosition: null,
-//     bibGreenStartLane: null,
-//     bibGreenSplitPosition: null,
-//     bibGreenFinishPosition: null,
-//     bibBlueStartLane: null,
-//     bibBlueSplitPosition: null,
-//     bibBlueFinishPosition: null,
-//     bibBlackStartLane: null,
-//     bibBlackSplitPosition: null,
-//     bibBlackFinishPosition: null,
-//     bibWhiteStartLane: null,
-//     bibWhiteSplitPosition: null,
-//     bibWhiteFinishPosition: null,
-//     bibYellowStartLane: null,
-//     bibYellowSplitPosition: null,
-//     bibYellowFinishPosition: null
-
-// }
-
-
-// logResponse(logEntry);
-
-// var logEntry =
-
-// {
-//     raceCodex: 'N9999',
-//     heatID: '1',
-//     sport: 'snowboarding',
-//     event: 'snowboardCross',
-//     indexed: 'Yes', 
-//     temp: '0', 
-//     precip: 'None', 
-//     gender: 'Men',
-//     bibRedStartLane: 1,
-//     bibRedSplitPosition: 2,
-//     bibRedFinishPosition: 3,
-//     bibGreenStartLane: 2,
-//     bibGreenSplitPosition: 3,
-//     bibGreenFinishPosition: 4,
-//     bibBlueStartLane: 3,
-//     bibBlueSplitPosition: 4,
-//     bibBlueFinishPosition: 5,
-//     bibBlackStartLane: 4,
-//     bibBlackSplitPosition: 5,
-//     bibBlackFinishPosition: 6,
-//     bibWhiteStartLane: 5,
-//     bibWhiteSplitPosition: 6,
-//     bibWhiteFinishPosition: 1,
-//     bibYellowStartLane: 6,
-//     bibYellowSplitPosition: 1,
-//     bibYellowFinishPosition: 2
-
-// }
-
-
-// logResponse(logEntry);
 
 var logEntry =
 
 {
-    raceCodex: 'hEAT5',
-    phaseID: 'Final', //heat#1, quarters#1, semi#1, final
+    raceCodex: 'F5999',
+    phaseID: 'Heat#1', //heat#1, quarters#1, semi#1, final
     sport: 'snowboarding',
     event: 'snowboardCross',
     indexed: 'Yes', 
     temp: '0', 
     precip: 'None', 
     gender: 'Men',
-    bibRedStartLane: 1,
-    bibGreenStartLane: 3,
-    bibBlueStartLane: 6,
-    bibBlackStartLane: 2,
-    bibWhiteStartLane: 4,
-    bibYellowStartLane: 5,
+    bibRedStartLane: 0,
+    bibGreenStartLane: 0,
+    bibBlueStartLane: 0,
+    bibBlackStartLane: 0,
+    bibWhiteStartLane: 0,
+    bibYellowStartLane: 0,
 
-    bibRedHolePosition: 1,
-    bibGreenHolePosition:2,
-    bibBlueHolePosition: 5,
-    bibBlackHolePosition: 4,
-    bibWhiteHolePosition: 3,
-    bibYellowHolePosition: 6,
+    bibRedHolePosition: 0,
+    bibGreenHolePosition:0,
+    bibBlueHolePosition: 0,
+    bibBlackHolePosition: 0,
+    bibWhiteHolePosition: 0,
+    bibYellowHolePosition: 0,
 
-    bibRedSplitPosition: 1,
-    bibGreenSplitPosition:4,
-    bibBlueSplitPosition: 3,
-    bibBlackSplitPosition: 4,
-    bibWhiteSplitPosition: 2,
-    bibYellowSplitPosition: 6,
+    bibRedSplitPosition: 0,
+    bibGreenSplitPosition:0,
+    bibBlueSplitPosition: 0,
+    bibBlackSplitPosition: 0,
+    bibWhiteSplitPosition: 0,
+    bibYellowSplitPosition: 0,
 
-    bibRedFinishPosition: 3,
-    bibGreenFinishPosition: 1,
-    bibBlueFinishPosition: 2,
-    bibBlackFinishPosition: 5,
-    bibWhiteFinishPosition: 6,
-    bibYellowFinishPosition: 4,
+    bibRedFinishPosition: 0,
+    bibGreenFinishPosition: 0,
+    bibBlueFinishPosition: 0,
+    bibBlackFinishPosition: 0,
+    bibWhiteFinishPosition: 0,
+    bibYellowFinishPosition: 0,
 
 }
 
 
-logResponse(logEntry);
+var startNumberArray = [];
+for (nextNumberToAdd = 1; nextNumberToAdd <=6 ; nextNumberToAdd++) {
+    console.log('nextNumberToAdd = ', nextNumberToAdd);
+    startNumberArray[findEmptySlot(startNumberArray)]= nextNumberToAdd;
+}
+
+console.log(startNumberArray);
+console.log('Complete!');
+
+console.log('Correctly assigned = ', checkArray(startNumberArray));
+console.log('Complete!')
+
+logEntry.bibRedStartLane = startNumberArray[1];
+logEntry.bibGreenStartLane = startNumberArray[2];
+logEntry.bibBlueStartLane = startNumberArray[3];
+logEntry.bibBlackStartLane = startNumberArray[4];
+logEntry.bibWhiteStartLane = startNumberArray[5];
+logEntry.bibYellowStartLane = startNumberArray[6];
+
+
+
+
+// logResponse(logEntry);
+
+console.log(logEntry);
+
